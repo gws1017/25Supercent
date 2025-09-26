@@ -15,21 +15,26 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private Animator anim;
 
+    public float HorizonItalInput {  get => hAxis;  set => hAxis = value; }
+    public float VerticalInput {  get => vAxis;  set => vAxis = value; }
+
+
+    public void ClearCache()
+    {
+        hAxis = 0;
+        vAxis = 0;
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
     }
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        hAxis = Input.GetAxisRaw("Horizontal");
-        vAxis = Input.GetAxisRaw("Vertical");
+        //hAxis = Input.GetAxisRaw("Horizontal");
+        //vAxis = Input.GetAxisRaw("Vertical");
 
         moveVec = new Vector3(hAxis,0, vAxis).normalized;
         rb.position += moveVec * speed * Time.deltaTime;
