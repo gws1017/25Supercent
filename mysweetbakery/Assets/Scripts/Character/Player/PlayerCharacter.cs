@@ -14,6 +14,9 @@ public class PlayerCharacter : MonoBehaviour
     }
     #endregion
 
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] public Transform moneyCollectPoint;
+
     private PlayerController playerController;
     private PlayerInventory inventory;
     // Start is called before the first frame update
@@ -25,6 +28,12 @@ public class PlayerCharacter : MonoBehaviour
         Singleton();
         playerController = GetComponent<PlayerController>();
         inventory = GetComponent<PlayerInventory>();
+    }
+
+    private void Start()
+    {
+        if(spawnPoint != null)
+            MoneyManager.Instance.Create(spawnPoint.position,10);
     }
 
 }

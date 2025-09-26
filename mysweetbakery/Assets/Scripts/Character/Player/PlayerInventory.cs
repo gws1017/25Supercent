@@ -8,6 +8,10 @@ public class PlayerInventory : MonoBehaviour
 
     public int CurrentMoney { get => currentMoney; set => currentMoney = value; }
 
+    private void Start()
+    {
+        HUD.instance.SetMoney(currentMoney);
+    }
     public bool TryConsumeMoney(int amount)
     {
         if (currentMoney < amount) return false;
