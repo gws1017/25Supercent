@@ -9,8 +9,6 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Colormap_St01_Transparent
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
   m_InvalidKeywords: []
@@ -21,7 +19,6 @@ Material:
   stringTagMap:
     RenderType: Transparent
   disabledShaderPasses: []
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -178,7 +175,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 0.9433962, g: 0.9328781, b: 0.88554645, a: 1}
-    - _Color: {r: 0.26330546, g: 0.5754717, b: 0.34959993, a: 0.54901963}
+    - _Color: {r: 0.26330543, g: 0.57547164, b: 0.3495999, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 0.9986401, b: 0.9496855, a: 1}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
