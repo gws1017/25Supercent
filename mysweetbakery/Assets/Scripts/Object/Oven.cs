@@ -25,7 +25,7 @@ public class Oven : MonoBehaviour
             StopCoroutine(produceCoroutine); 
     }
 
-    Vector3 TrayLocalPos(int i)
+    private Vector3 TrayLocalPos(int i)
     {
         int cx = i % (int)trayGrid.x;
         int cy = i / (int)trayGrid.x;
@@ -34,7 +34,7 @@ public class Oven : MonoBehaviour
         return new Vector3(offX, 0, offZ);
     }
 
-    IEnumerator ProduceRoutine()
+    private IEnumerator ProduceRoutine()
     {
         while (true)
         {

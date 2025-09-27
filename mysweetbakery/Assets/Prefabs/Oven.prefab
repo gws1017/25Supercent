@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1314530382245555237}
   - component: {fileID: 1241130678447550871}
+  - component: {fileID: 4219994274755539200}
   m_Layer: 0
   m_Name: Oven
   m_TagString: Untagged
@@ -54,6 +55,19 @@ MonoBehaviour:
   trayMax: 10
   trayGrid: {x: 3, y: 4}
   traySpacing: {x: 0.22, y: 0.22}
+--- !u!65 &4219994274755539200
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189916672619091913}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.3, y: 1.21, z: 2.333047}
+  m_Center: {x: 0, y: 0.5251769, z: 1.9495673}
 --- !u!1 &6908949153748365946
 GameObject:
   m_ObjectHideFlags: 0
