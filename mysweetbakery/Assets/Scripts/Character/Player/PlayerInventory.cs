@@ -5,8 +5,12 @@ using UnityEngine;
 public class PlayerInventory : MonoBehaviour
 {
     private int currentMoney = 0;
+    private int currentBread = 0;
+    private int maxBread = 8;
 
     public int CurrentMoney { get => currentMoney; set => currentMoney = value; }
+    public int CurrentBread { get => currentBread; set => currentBread = value; }
+    public int MaxBread { get => maxBread; }
 
     private void Start()
     {

@@ -14,10 +14,17 @@ public class PlayerController : MonoBehaviour
     Vector3 moveVec;
     private Rigidbody rb;
     private Animator anim;
-
+    private bool isStack = false;
     public float HorizonItalInput {  get => hAxis;  set => hAxis = value; }
     public float VerticalInput {  get => vAxis;  set => vAxis = value; }
 
+
+    public void SetStackMode(bool value)
+    {
+        isStack = value;
+        if(anim != null)
+            anim.SetBool("isStack",isStack);
+    }
 
     public void ClearCache()
     {

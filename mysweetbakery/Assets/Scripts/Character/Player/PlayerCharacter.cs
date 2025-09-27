@@ -23,6 +23,11 @@ public class PlayerCharacter : MonoBehaviour
 
     public PlayerInventory PlayerInventory => inventory;
 
+    public void SetStackMode(bool stackMode)
+    {
+         playerController.SetStackMode(stackMode);
+    }
+
     private void Awake()
     {
         Singleton();
