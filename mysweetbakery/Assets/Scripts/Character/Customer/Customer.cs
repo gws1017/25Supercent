@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,26 +12,23 @@ public class Customer : MonoBehaviour
 
     [Header("Components Read Only")]
     [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private BreadStack carryStack;       // 고객도 손에 쌓아 들기 위해 재사용
+    [SerializeField] private BreadStack carryStack;
     [SerializeField] private CustomerHeadUI headUI;
     private Animator anim;
-    //[SerializeField] private Transform headFollow;        // 머리 위
-    
-    [Header("Components Register")]
-    [SerializeField] public CashierQueue cashierQueue;
-    [SerializeField] private Cashier cashier;           // 계산대 컨트롤러
-    [SerializeField] private Transform exitPoint;
 
     [Header("Targets")]
-    [SerializeField] private ShowBasket targetShelf;      // 씬에 하나면 FindObjectOfType로 자동지정 가능
-    [SerializeField] private Transform shelfStandPoint;   // 진열대 앞 설 위치(슬롯 밀림 방지용 오프셋 빈 오브젝트)
+    [SerializeField] private ShowBasket targetShelf;      
+    [SerializeField] private Transform shelfStandPoint;  
 
     [Header("Order Rules")]
     [SerializeField] private bool dineInFeatureEnabled = false; // 기능 오픈 플래그
     [SerializeField] private Vector2Int breadRange = new Vector2Int(1, 3);
 
-    private bool requestServing = false;
+    private Transform exitPoint;
+    private CashierQueue cashierQueue;
+    private Cashier cashier;
     private Order order;
+    private bool requestServing = false;
     private CustomerState state;
     private int myQueueIndex = -1;
     public int RemainingToPick { get; private set; }
@@ -63,7 +62,6 @@ public class Customer : MonoBehaviour
             myQueueIndex = cashierQueue.Enqueue(this);
             Vector3 qpos = cashierQueue.GetPointPos(myQueueIndex);
             MoveTo(qpos);
-            ChangeState(CustomerState.ToQueue);
         }
         else
         {
@@ -77,17 +75,38 @@ public class Customer : MonoBehaviour
         if (RemainingToPick > 0) RemainingToPick--;
     }
 
-    void Awake()
+    public void Init(CashierQueue queue, ShowBasket shelf, Transform point)
+    {
+        cashierQueue = queue;
+        targetShelf = shelf;
+        exitPoint = point;
+        cashierQueue.QueueChanged += OnQueueChanged;
+    }
+
+    private void OnDestroy()
+    {
+        if (cashierQueue) cashierQueue.QueueChanged -= OnQueueChanged;
+    }
+    private void Awake()
     {
         if (!agent) agent = GetComponent<NavMeshAgent>();
         if (!carryStack) carryStack = GetComponent<BreadStack>();
         if (!headUI) headUI = GetComponentInChildren<CustomerHeadUI>();
         if (!targetShelf) targetShelf = FindObjectOfType<ShowBasket>();
         if (!anim) anim = GetComponent<Animator>();
+        
     }
 
-    void Start()
+    private void Start()
     {
+        if (!cashier) cashier = Cashier.instance;
+        if (!cashierQueue) cashierQueue = cashier.CashQueue;
+
+        if (cashierQueue)
+        {
+            cashierQueue.QueueChanged -= OnQueueChanged;
+            cashierQueue.QueueChanged += OnQueueChanged;
+        }
         InitOrder();
 
         // 진열대 앞으로 이동
@@ -109,7 +128,13 @@ public class Customer : MonoBehaviour
     {
         if (!agent) return true;
         if (agent.pathPending) return false;
-        return agent.remainingDistance <= Mathf.Max(eps, agent.stoppingDistance + 0.05f);
+
+        if(agent.remainingDistance <= Mathf.Max(eps, agent.stoppingDistance + 1f))
+        {
+            anim.SetBool("isMove", false);
+            return true;
+        }
+        return false;
     }
 
     private void InitOrder()
@@ -127,6 +152,35 @@ public class Customer : MonoBehaviour
     {
         if(anim) anim.SetBool("isStack", value);
     }
+    private void TryPromoteToCounter()
+    {
+        if (state == CustomerState.AtCounter || cashierQueue == null) return;
+        if (!cashierQueue.IsFront(this)) return;
+        if (!Arrived()) return;
+
+        // 여기서만 캐셔 바쁨 체크: 바쁘면 '맨앞 대기점'에서 기다린다
+        if (cashier != null && cashier.IsBusy) return;
+
+        state = CustomerState.AtCounter;
+        requestServing = false;
+    }
+
+    public void OnQueueChanged()
+    {
+        if (cashierQueue == null) return;
+
+        int idx = cashierQueue.GetIndex(this);
+        if (idx < 0) return; // 줄에 없으면 무시
+
+        bool iAmFront = cashierQueue.IsFront(this);
+        if (iAmFront && cashier != null && cashier.IsBusy)
+            return;
+
+        Vector3 target = cashierQueue.GetPointPos(idx);
+        MoveTo(target);
+
+        TryPromoteToCounter();
+    }
 
     private IEnumerator StateRoutine()
     {
@@ -137,7 +191,6 @@ public class Customer : MonoBehaviour
                 case CustomerState.ToShelf:
                     if (Arrived())
                     {
-                        anim.SetBool("isMove", false);
                         headUI.ShowOrder(order.breadCount);
                         state = CustomerState.WaitShelf;
                     }
@@ -155,7 +208,7 @@ public class Customer : MonoBehaviour
                     }
                     break;
 
-                case CustomerState.ToQueue:
+                case CustomerState.ToQueue://계산대로 이동
                     if (Arrived())
                     {
                         anim.SetBool("isMove", false);
@@ -165,12 +218,13 @@ public class Customer : MonoBehaviour
 
                 case CustomerState.InQueue:
                         state = CustomerState.AtCounter;
-                        headUI.ShowPOS();
                     break;
 
                 case CustomerState.AtCounter:
-                    if(cashierQueue &&  cashierQueue.IsFront(this))
+
+                    if (cashierQueue &&  cashierQueue.IsFront(this))
                     {
+                        anim.SetBool("isMove", false);
                         if (!requestServing && cashier)
                         {
                             requestServing = true;

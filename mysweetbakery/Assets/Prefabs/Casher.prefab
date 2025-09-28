@@ -34,6 +34,7 @@ Transform:
   - {fileID: 2148879827037248667}
   - {fileID: 2148879827101099203}
   - {fileID: 3551864109129942287}
+  - {fileID: 302822544900018053}
   - {fileID: 6412960664856215814}
   - {fileID: 8052834526799655856}
   - {fileID: 751901608618858383}
@@ -65,6 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e2c43af13614c4ea39b430cd18db74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cashierQueue: {fileID: 4952546593325390863}
   bagSpawnPoint: {fileID: 8052834526799655856}
   bagPrefab: {fileID: 4398240943782114576, guid: 5f3a83b985d174ecf846edb7c0a3b4ae, type: 3}
   moneySpawnPoint: {fileID: 751901608618858383}
@@ -100,7 +102,38 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1898517571848847370}
-  m_RootOrder: 6
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5009621475892260460
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 302822544900018053}
+  m_Layer: 0
+  m_Name: LineEndPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &302822544900018053
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5009621475892260460}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.41, y: 0, z: -9.47}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1898517571848847370}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5149807839205049452
 GameObject:
@@ -131,7 +164,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1898517571848847370}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5699405770723029360
 GameObject:
@@ -177,7 +210,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d33ae0907a34da14a8f4a6e65dcb206d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitPoints: []
+  lineStart: {fileID: 3551864109129942287}
+  lineEnd: {fileID: 0}
+  spacing: 1
+  initialSlots: 6
+  expandChunk: 4
 --- !u!1 &8666574106581645669
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +245,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1898517571848847370}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &8057418609915061503
 BoxCollider:

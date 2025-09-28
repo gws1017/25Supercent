@@ -5,18 +5,22 @@ using UnityEngine;
 public class CustomerSpawner : MonoBehaviour
 {
     [SerializeField] private Customer customerPrefab;
-    [SerializeField] private Transform spawnPoint;
     [SerializeField] private CashierQueue cashierQueue;
-    [SerializeField] private ShowBasket shelf;
+    [SerializeField] private Transform spawnPoint;
     [SerializeField] private float interval = 3f;
     [SerializeField] private int maxAlive = 6;
 
+    private ShowBasket shelf;
     private readonly List<Customer> alive = new();
 
+    private void Awake()
+    {
+        if (!shelf) shelf = FindObjectOfType<ShowBasket>();
+    }
     void OnEnable() { StartCoroutine(SpawnLoop()); }
     void OnDisable() { StopAllCoroutines(); }
 
-    IEnumerator SpawnLoop()
+    private IEnumerator SpawnLoop()
     {
         var wait = new WaitForSeconds(interval);
         while (true)
@@ -24,15 +28,9 @@ public class CustomerSpawner : MonoBehaviour
             alive.RemoveAll(x => x == null);
             if (alive.Count < maxAlive)
             {
-                var c = Instantiate(customerPrefab, spawnPoint.position, Quaternion.identity);
-                // 간단한 의존성 주입
-                if (!c.TryGetComponent(out Customer cust)) cust = c.GetComponent<Customer>();
-                if (cust)
-                {
-                    if (cashierQueue) cust.GetType().GetField("cashierQueue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(cust, cashierQueue);
-                    if (shelf) cust.GetType().GetField("targetShelf", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(cust, shelf);
-                }
-                alive.Add(cust);
+                var customer = Instantiate(customerPrefab, spawnPoint.position, Quaternion.identity);
+                customer.Init(cashierQueue, shelf, spawnPoint);
+                alive.Add(customer);
             }
             yield return wait;
         }

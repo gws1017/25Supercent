@@ -81,6 +81,7 @@ public class ShowBasket : MonoBehaviour
     {
         var stack = other.GetComponentInChildren<BreadStack>();
         if (stack) stack.StartPushTo(GetEmptyShowBasketSlot);
+
     }
     void OnTriggerExit(Collider other)
     {

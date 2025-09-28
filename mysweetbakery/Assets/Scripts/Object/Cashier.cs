@@ -5,7 +5,16 @@ using UnityEngine;
 
 public class Cashier : MonoBehaviour
 {
+    #region Singleton
+    public static Cashier instance { get; private set; }
+
+    private void Singleton()
+    {
+        instance = this;
+    }
+    #endregion
     [Header("Components")]
+    [SerializeField] private CashierQueue cashierQueue;     // 계산대 위 가방 스폰 위치
     [SerializeField] private Transform bagSpawnPoint;     // 계산대 위 가방 스폰 위치
     [SerializeField] private PaperBag bagPrefab;
     [SerializeField] private Transform moneySpawnPoint;   // 돈 더미 스폰 위치
@@ -15,9 +24,11 @@ public class Cashier : MonoBehaviour
     [SerializeField] private GameObject happyEmojiPrefab; // 고객 머리 위에서 작아지며 사라지는 이모티콘
     [SerializeField] private float happyDuration = 0.6f;
 
-    private bool busy;
+    private bool isBusy;
     private bool isEnter;
     private Customer pending;
+    public bool IsBusy => isBusy;
+    public CashierQueue CashQueue => cashierQueue;
     public void OnCustomerArrived(Customer c)
     {
         if (c == null) return;
@@ -29,7 +40,7 @@ public class Cashier : MonoBehaviour
 
     private void TryServe()
     {
-        if (busy) return;
+        if (isBusy) return;
         if (!isEnter) return;      
         if (pending == null) return;
         if (!pending.IsQueueFront()) return;
@@ -39,7 +50,7 @@ public class Cashier : MonoBehaviour
 
     private IEnumerator ServeRoutine(Customer c)
     {
-        busy = true;
+        isBusy = true;
 
         // 1) 가방 소환 + appear
         var bag = Instantiate(bagPrefab, bagSpawnPoint.position, bagSpawnPoint.rotation);
@@ -74,14 +85,12 @@ public class Cashier : MonoBehaviour
             StartCoroutine(HappyShrinkAndKill(fx, happyDuration));
         }
 
-        // 7) 큐에서 제거 + 손님 퇴장 명령
-        if (c.cashierQueue) c.cashierQueue.DequeueIfFront(c);
+        isBusy = false;
+
+        if (cashierQueue) cashierQueue.DequeueIfFront(c);
         c.OnServedAndLeave();
 
         pending = null;
-        busy = false;
-
-        // 플레이어가 계속 서 있고 다음 손님이 있다면 연속 처리
         TryServe();
     }
 
@@ -94,10 +103,15 @@ public class Cashier : MonoBehaviour
         {
             t += Time.deltaTime * inv;
             float u = Mathf.Clamp01(t);
-            go.transform.localScale = Vector3.Lerp(s0, Vector3.zero, u);
+            if (go) go.transform.localScale = Vector3.Lerp(s0, Vector3.zero, u);
             yield return null;
         }
         Destroy(go);
+    }
+
+    private void Awake()
+    {
+        Singleton();
     }
 
     private void OnTriggerEnter(Collider other)
