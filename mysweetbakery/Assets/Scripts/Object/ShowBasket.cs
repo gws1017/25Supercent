@@ -18,15 +18,43 @@ public class ShowBasket : MonoBehaviour
 
     public Transform GetEmptyShowBasketSlot()
     {
-        // 이미 채워진 슬롯은 childCount>0
-        while (slotIndex < slots.Count && slots[slotIndex].childCount > 0)
-            slotIndex++;
+        for (int i = 0; i < slots.Count; ++i)
+        {
+            var t = slots[i];
+            if (t && t.childCount == 0)
+                return t;
+        }
+        return null;
 
-        if (slotIndex >= slots.Count) return null;
-        breadCnt = slotIndex;
+    }
 
-        var slot = slots[slotIndex];
-        return slot;
+    public Bread TakeBread()
+    {
+        // 뒤에서부터(최근 채운 슬롯부터) 탐색해서 child가 있으면 하나 꺼냄
+        for (int i = slots.Count - 1; i >= 0; --i)
+        {
+            var slot = slots[i];
+            if (slot && slot.childCount > 0)
+            {
+                var child = slot.GetChild(0);
+                var bread = child.GetComponent<Bread>();
+                if (bread)
+                {
+                    bread.transform.SetParent(null, true);
+                    slotIndex = 0;                        
+                    return bread;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int GetAvailableBreadCount()
+    {
+        int cnt = 0;
+        for (int i = 0; i < slots.Count; ++i)
+            if (slots[i] && slots[i].childCount > 0) cnt++;
+        return cnt;
     }
 
     private void Awake()

@@ -20,7 +20,22 @@ public class Bread : MonoBehaviour
     public void FlyTo(Transform target, float duration, Action onArrive = null, bool scaleByCurve = true)
     {
         if (flyCorutine != null) StopCoroutine(flyCorutine);
+        OffPhysics();
         flyCorutine = StartCoroutine(FlyRoutine(target, duration, onArrive, scaleByCurve));
+    }
+
+    private void OffPhysics()
+    {
+        var rb = GetComponent<Rigidbody>();
+        if (rb == null) return;
+        rb.isKinematic = true;
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        var col = GetComponent<Collider>();
+        if (col == null) return;
+        col.enabled = false;
     }
 
     IEnumerator FlyRoutine(Transform target, float duration, Action onArrive, bool scaleByCurve)

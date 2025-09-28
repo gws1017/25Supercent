@@ -1,12 +1,14 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.VersionControl;
 using UnityEngine;
+using static Customer;
 
 public class BreadStack : MonoBehaviour
 {
-    [SerializeField] private Transform stackRootTransform;      // ÆÈ/¼Õ À§Ä¡(ºÎ¸ğ)
+    [SerializeField] public Transform stackRootTransform;      // íŒ”/ì† ìœ„ì¹˜(ë¶€ëª¨)
     [SerializeField] private TMP_Text maxText;
 
     [SerializeField] private float slotHeight = 0.12f;
@@ -16,9 +18,12 @@ public class BreadStack : MonoBehaviour
 
     private readonly List<Bread> BreadStacks = new List<Bread>();
     private readonly List<Transform> slots = new List<Transform>();
-    private Coroutine pullCoroutine, pushCooroutine;
+    private Coroutine pullCoroutine, pushCoroutine,pickCoroutine;
+    private bool isPicking;
     public int Count => BreadStacks.Count;
-    public bool IsFull() 
+    public float SlotHeight => slotHeight;
+    public int SlotIndex {get =>  slotIndex; set =>  slotIndex = value;}
+public bool IsFull() 
     {
         var player = PlayerCharacter.instance;
         var inven = PlayerCharacter.instance?.PlayerInventory;
@@ -70,7 +75,7 @@ public class BreadStack : MonoBehaviour
 
             
 
-            var bread = provider?.Invoke();     // ¿ÀºìÀÌ Áï½Ã ÇÑ °³ ³»ÁÜ(¾øÀ¸¸é null)
+            var bread = provider?.Invoke();     // ì˜¤ë¸ì´ ì¦‰ì‹œ í•œ ê°œ ë‚´ì¤Œ(ì—†ìœ¼ë©´ null)
             if (!bread) { yield return null; continue; }
 
             int index = slotIndex++;
@@ -82,17 +87,6 @@ public class BreadStack : MonoBehaviour
 
             bread.FlyTo(slot, flyDuration, () =>
             {
-                var rb = bread.GetComponent<Rigidbody>();
-                if (rb == null) return;
-                rb.isKinematic = true;
-                rb.useGravity = false;
-                rb.velocity = Vector3.zero; 
-                rb.angularVelocity = Vector3.zero;
-
-                var col = bread.GetComponent<Collider>();
-                if(col == null) return;
-                col.enabled = false;
-
                 bread.transform.SetParent(slot, false);
                 bread.transform.localPosition = Vector3.zero;
                 bread.transform.localRotation = Quaternion.identity;
@@ -108,15 +102,15 @@ public class BreadStack : MonoBehaviour
 
     public void StartPushTo(Func<Transform> showBasketSlot)
     {
-        if (pushCooroutine != null) StopCoroutine(pushCooroutine);
-        pushCooroutine = StartCoroutine(PushRoutine(showBasketSlot));
+        if (pushCoroutine != null) StopCoroutine(pushCoroutine);
+        pushCoroutine = StartCoroutine(PushRoutine(showBasketSlot));
     }
     public void StopPush() 
     {
-        if (pushCooroutine != null)
+        if (pushCoroutine != null)
         {
-            StopCoroutine(pushCooroutine); 
-            pushCooroutine = null;
+            StopCoroutine(pushCoroutine); 
+            pushCoroutine = null;
         }
     }
 
@@ -124,7 +118,7 @@ public class BreadStack : MonoBehaviour
     {
         while (BreadStacks.Count > 0)
         {
-            // À§¿¡¼­ºÎÅÍ ÇÏ³ª¾¿
+            // ìœ„ì—ì„œë¶€í„° í•˜ë‚˜ì”©
             int last = BreadStacks.Count - 1;
             var bread = BreadStacks[last];
 
@@ -135,10 +129,10 @@ public class BreadStack : MonoBehaviour
             if (slotIdx < 0 || slotIdx >= slots.Count)
                 yield break;
 
-            var slot = slots[slotIdx]; //ÇÃ·¹ÀÌ¾î¿¡ ºÎÂøµÈ ½½·Ô
+            var slot = slots[slotIdx]; //í”Œë ˆì´ì–´ì— ë¶€ì°©ëœ ìŠ¬ë¡¯
 
             var shelfSlot = GetEmptyShowBasketSlot?.Invoke();
-            // Áø¿­´ë°¡ ÀÚ¸®°¡ ¾øÀ¸¸é µÇµ¹·Á ³õ±â
+            // ì§„ì—´ëŒ€ê°€ ìë¦¬ê°€ ì—†ìœ¼ë©´ ë˜ëŒë ¤ ë†“ê¸°
             if (!shelfSlot)
                 yield break;
 
@@ -168,9 +162,9 @@ public class BreadStack : MonoBehaviour
                 }
 
                 slots.Remove(slot);
-                if (slot) Destroy(slot.gameObject); //ÇÃ·¹ÀÌ¾î¿¡°Ô ºÎÂøµÈ ºó ½½·Ô »èÁ¦
+                if (slot) Destroy(slot.gameObject); //í”Œë ˆì´ì–´ì—ê²Œ ë¶€ì°©ëœ ë¹ˆ ìŠ¬ë¡¯ ì‚­ì œ
 
-                //¸¶Áö¸· »§ÀÌ¸é ½ºÅÃ»óÅÂ ÇØÁ¦
+                //ë§ˆì§€ë§‰ ë¹µì´ë©´ ìŠ¤íƒìƒíƒœ í•´ì œ
                 if (BreadStacks.Count <= 0 && player)
                     player.SetStackMode(false);
                 ShowMax(IsFull());
@@ -182,4 +176,68 @@ public class BreadStack : MonoBehaviour
         }
     }
 
+    public void StartPick(Func<Bread> provider, Customer customer)
+    {
+        if (pickCoroutine != null) StopCoroutine(pickCoroutine);
+        if (isPicking) return;
+        isPicking = true;
+        pickCoroutine = StartCoroutine(PickFromShelfRoutine(provider, customer));
+    }
+    public void StopPick()
+    {
+        if (pickCoroutine != null)
+        {
+            StopCoroutine(pickCoroutine);
+            pickCoroutine = null;
+            isPicking = false;
+        }
+    }
+
+    IEnumerator PickFromShelfRoutine(Func<Bread> provider, Customer customer)
+    {
+        if (customer.RemainingToPick <= 0)
+            goto Done;
+
+        while (customer.RemainingToPick > 0)
+        {
+            var bread = provider?.Invoke();
+            if (!bread)
+            {
+                // ë” ì´ìƒ ì§‘ì„ ë¹µì´ ì—†ìœ¼ë©´ ëŒ€ê¸° ìƒíƒœë¡œ ì „í™˜
+                customer.ChangeState(Customer.CustomerState.WaitShelf);
+                pickCoroutine = null;
+                isPicking = false;
+                yield break;
+            }
+
+            int index = slots.Count; 
+            var slot = new GameObject($"CustSlot_{index}").transform;
+            slot.SetParent(stackRootTransform, false);
+            slot.localPosition = new Vector3(0, index * slotHeight, 0);
+            slot.localRotation = Quaternion.identity;
+            slots.Add(slot);
+
+            bool arrived = false;
+            bread.FlyTo(slot, 0.22f, onArrive: () =>
+            {
+                bread.transform.SetParent(slot, false);
+                bread.transform.localPosition = Vector3.zero;
+                bread.transform.localRotation = Quaternion.identity;
+                bread.transform.localScale = Vector3.one * 0.5f;
+
+                BreadStacks.Add(bread);
+                customer.OnPickedOne();           
+                customer.ShowOrderUI(customer.RemainingToPick);
+                arrived = true;
+            }, scaleByCurve: true);
+            while (!arrived) yield return null;
+            yield return new WaitForSeconds(0.04f);
+        }
+        Done:
+        yield return null;
+        pickCoroutine = null;
+        isPicking = false;
+        customer.ChangeState(Customer.CustomerState.ToQueue);
+        customer.MoveToCashier();
+    }
 }
