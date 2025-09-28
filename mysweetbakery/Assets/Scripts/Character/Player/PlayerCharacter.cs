@@ -14,7 +14,6 @@ public class PlayerCharacter : MonoBehaviour
     }
     #endregion
 
-    [SerializeField] private Transform spawnPoint;
     [SerializeField] public Transform moneyCollectPoint;
 
     private PlayerController playerController;
@@ -37,8 +36,6 @@ public class PlayerCharacter : MonoBehaviour
 
     private void Start()
     {
-        if(spawnPoint != null)
-            MoneyManager.Instance.Create(spawnPoint.position,10);
     }
 
 }

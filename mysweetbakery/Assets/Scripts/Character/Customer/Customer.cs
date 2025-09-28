@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 {
-    public enum CustomerState { ToShelf, WaitShelf, Picking, ToQueue, InQueue, AtCounter }
+    public enum CustomerState { ToShelf, WaitShelf, Picking, ToQueue, InQueue, AtCounter, Leaving }
     [Serializable] public class Order { public int breadCount; public bool dineIn; }
 
     [Header("Components Read Only")]
@@ -17,6 +17,8 @@ public class Customer : MonoBehaviour
     
     [Header("Components Register")]
     [SerializeField] public CashierQueue cashierQueue;
+    [SerializeField] private Cashier cashier;           // 계산대 컨트롤러
+    [SerializeField] private Transform exitPoint;
 
     [Header("Targets")]
     [SerializeField] private ShowBasket targetShelf;      // 씬에 하나면 FindObjectOfType로 자동지정 가능
@@ -26,16 +28,26 @@ public class Customer : MonoBehaviour
     [SerializeField] private bool dineInFeatureEnabled = false; // 기능 오픈 플래그
     [SerializeField] private Vector2Int breadRange = new Vector2Int(1, 3);
 
+    private bool requestServing = false;
     private Order order;
     private CustomerState state;
     private int myQueueIndex = -1;
     public int RemainingToPick { get; private set; }
     public int NeedBreadCount => order.breadCount;
-
+    public BreadStack GetCarryStack() => carryStack;
+    public bool CarryStackExists() => carryStack != null;
+    public Transform GetHand() => carryStack ? carryStack.bagTransform : transform;
+    public void HideHeadIcon() => headUI?.Hide();
+    public bool IsQueueFront() { return cashierQueue ? cashierQueue.IsFront(this) : false; }
+    public void OnServedAndLeave()
+    {
+        ChangeState(CustomerState.Leaving);
+        var dest = exitPoint ? exitPoint.position : transform.position + (-transform.forward) * 5f;
+        MoveTo(dest);
+    }
     public void ShowOrderUI(int amount)
     {
         headUI.ShowOrder(amount);
-
     }
 
     public void ChangeState(CustomerState cs)
@@ -159,11 +171,18 @@ public class Customer : MonoBehaviour
                 case CustomerState.AtCounter:
                     if(cashierQueue &&  cashierQueue.IsFront(this))
                     {
-                        //SetStackMode(false);
-
-                        // 여기서 결제 로직 붙이면 됨(결제 완료 후 Dequeue)
-                        // cashierQueue.DequeueIfFront(this); Destroy(gameObject); 등
-
+                        if (!requestServing && cashier)
+                        {
+                            requestServing = true;
+                            cashier.OnCustomerArrived(this);   // 한 번만 요청
+                        }
+                    }
+                    break;
+                case CustomerState.Leaving:
+                    if (Arrived())
+                    {
+                        anim.SetBool("isMove", false);
+                        Destroy(gameObject);
                     }
                     break;
             }

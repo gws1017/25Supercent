@@ -9,6 +9,7 @@ using static Customer;
 public class BreadStack : MonoBehaviour
 {
     [SerializeField] public Transform stackRootTransform;      // 팔/손 위치(부모)
+    [SerializeField] public Transform bagTransform;      // 팔/손 위치(부모)
     [SerializeField] private TMP_Text maxText;
 
     [SerializeField] private float slotHeight = 0.12f;
@@ -239,5 +240,38 @@ public bool IsFull()
         isPicking = false;
         customer.ChangeState(Customer.CustomerState.ToQueue);
         customer.MoveToCashier();
+    }
+
+
+    public IEnumerator PackBreadRoutine(Transform target, float duration = 0.22f, float stagger = 0.04f)
+    {
+        while (BreadStacks.Count > 0)
+        {
+            int last = BreadStacks.Count - 1;
+            var bread = BreadStacks[last];
+            BreadStacks.RemoveAt(last);
+
+            // 위에서부터 슬롯 제거
+            int slotIdx = slots.Count - 1;
+            if (slotIdx >= 0)
+            {
+                var slot = slots[slotIdx];
+                slots.RemoveAt(slotIdx);
+                if (slot) Destroy(slot.gameObject);
+            }
+            slotIndex = Mathf.Max(0, slotIndex - 1);
+
+            // 손에서 분리 후 가방 입구로 흡입, 도착하면 빵 제거
+            if (bread)
+            {
+                bread.transform.SetParent(null, true);
+                bread.FlyTo(target, duration, onArrive: () =>
+                {
+                    Destroy(bread.gameObject);
+                }, scaleByCurve: true);
+            }
+
+            yield return new WaitForSeconds(stagger);
+        }
     }
 }
