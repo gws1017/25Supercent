@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &729805130526884077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5158290235911573891}
+  m_Layer: 0
+  m_Name: LineEndPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5158290235911573891
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729805130526884077}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.84, y: 0, z: -8.78}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1898517571848847370}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1898517571848847371
 GameObject:
   m_ObjectHideFlags: 0
@@ -38,6 +69,8 @@ Transform:
   - {fileID: 6412960664856215814}
   - {fileID: 8052834526799655856}
   - {fileID: 751901608618858383}
+  - {fileID: 7322921519151372240}
+  - {fileID: 5158290235911573891}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -66,7 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e2c43af13614c4ea39b430cd18db74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cashierQueue: {fileID: 4952546593325390863}
+  takeoutQueue: {fileID: 4952546593325390863}
+  dineInQueue: {fileID: 7109729533640960992}
   bagSpawnPoint: {fileID: 8052834526799655856}
   bagPrefab: {fileID: 4398240943782114576, guid: 5f3a83b985d174ecf846edb7c0a3b4ae, type: 3}
   moneySpawnPoint: {fileID: 751901608618858383}
@@ -191,7 +225,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5699405770723029360}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.41, y: 0, z: 0.101}
+  m_LocalPosition: {x: 0.41, y: 0, z: -1.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -211,8 +245,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineStart: {fileID: 3551864109129942287}
-  lineEnd: {fileID: 0}
-  spacing: 1
+  lineEnd: {fileID: 302822544900018053}
+  spacing: 1.5
+  initialSlots: 6
+  expandChunk: 4
+--- !u!1 &7185293195626834632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7322921519151372240}
+  - component: {fileID: 7109729533640960992}
+  m_Layer: 0
+  m_Name: WaitPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7322921519151372240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7185293195626834632}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.79, y: 0, z: -1.55}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1898517571848847370}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7109729533640960992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7185293195626834632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d33ae0907a34da14a8f4a6e65dcb206d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineStart: {fileID: 7322921519151372240}
+  lineEnd: {fileID: 5158290235911573891}
+  spacing: 1.5
   initialSlots: 6
   expandChunk: 4
 --- !u!1 &8666574106581645669

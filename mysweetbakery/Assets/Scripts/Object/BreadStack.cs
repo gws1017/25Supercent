@@ -204,7 +204,6 @@ public bool IsFull()
             var bread = provider?.Invoke();
             if (!bread)
             {
-                // 더 이상 집을 빵이 없으면 대기 상태로 전환
                 customer.ChangeState(Customer.CustomerState.WaitShelf);
                 pickCoroutine = null;
                 isPicking = false;
@@ -242,7 +241,6 @@ public bool IsFull()
         customer.MoveToCashier();
     }
 
-
     public IEnumerator PackBreadRoutine(Transform target, float duration = 0.22f, float stagger = 0.04f)
     {
         while (BreadStacks.Count > 0)
@@ -271,6 +269,45 @@ public bool IsFull()
                 }, scaleByCurve: true);
             }
 
+            yield return new WaitForSeconds(stagger);
+        }
+    }
+
+    public IEnumerator PlaceAllTo(IList<Transform> tableSlots, float duration = 0.18f, float stagger = 0.04f)
+    {
+        int si = 0;
+        while (BreadStacks.Count > 0 && si < tableSlots.Count)
+        {
+            int last = BreadStacks.Count - 1;
+            var bread = BreadStacks[last];
+            BreadStacks.RemoveAt(last);
+
+            int slotIdx = slots.Count - 1;
+            Transform holdSlot = null;
+            if (slotIdx >= 0)
+            {
+                holdSlot = slots[slotIdx];
+                slots.RemoveAt(slotIdx);
+            }
+            slotIndex = Mathf.Max(0, slotIndex - 1);
+
+            var targetSlot = tableSlots[si++];
+            if (bread)
+            {
+                bread.transform.SetParent(null, true);
+                bool arrived = false;
+                bread.FlyTo(targetSlot, duration, () =>
+                {
+                    bread.transform.SetParent(targetSlot, true);
+                    bread.transform.localPosition = Vector3.zero;
+                    bread.transform.localRotation = Quaternion.identity;
+                    bread.transform.localScale = Vector3.one * 0.8f;
+                    arrived = true;
+                }, scaleByCurve: true);
+                while (!arrived) yield return null;
+            }
+
+            if (holdSlot) Destroy(holdSlot.gameObject);
             yield return new WaitForSeconds(stagger);
         }
     }

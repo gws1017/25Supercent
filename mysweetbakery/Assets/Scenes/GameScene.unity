@@ -2900,10 +2900,10 @@ Transform:
   - {fileID: 1769451118}
   - {fileID: 1224174533}
   - {fileID: 1291709513}
+  - {fileID: 560650987}
   - {fileID: 8548450309355936269}
   - {fileID: 1751014710}
   - {fileID: 366473415}
-  - {fileID: 560650987}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3781,6 +3781,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 20755902}
+  - {fileID: 1726436759}
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3998,6 +3999,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5030473247645363575, guid: 692814a604c55854c9bffebf993dd8fd, type: 3}
   m_PrefabInstance: {fileID: 1704867887}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1726436758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1726436759}
+  - component: {fileID: 1726436760}
+  m_Layer: 0
+  m_Name: BuildManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1726436759
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726436758}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1582873640}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1726436760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726436758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe57c1eee6f9de4479bbc9e125b1cc96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1751014709
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5213,14 +5258,6 @@ PrefabInstance:
     - target: {fileID: 1898517571848847371, guid: 55c50d96658cd3c4dbdeb97aa6913b04, type: 3}
       propertyPath: m_Name
       value: Casher
-      objectReference: {fileID: 0}
-    - target: {fileID: 3551864109129942287, guid: 55c50d96658cd3c4dbdeb97aa6913b04, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 4952546593325390863, guid: 55c50d96658cd3c4dbdeb97aa6913b04, type: 3}
-      propertyPath: spacing
-      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4952546593325390863, guid: 55c50d96658cd3c4dbdeb97aa6913b04, type: 3}
       propertyPath: waitPoints.Array.size

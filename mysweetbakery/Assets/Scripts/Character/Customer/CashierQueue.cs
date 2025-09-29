@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,11 @@ public class CashierQueue : MonoBehaviour
     public event System.Action QueueChanged;
     public int GetIndex(Customer c) => snapshot.IndexOf(c);
     public bool IsFront(Customer c) => line.Count > 0 && line.Peek() == c;
+
+    public Customer PeekFront()
+    {
+        return line.Count > 0 ? line.Peek() : null;
+    }
 
     public int Enqueue(Customer c)
     {

@@ -4,11 +4,12 @@ using UnityEngine.UI;
 
 public class CustomerHeadUI : MonoBehaviour
 {
-    [SerializeField] private Canvas worldCanvas; // World Space
+    [SerializeField] private Canvas worldCanvas;
     [SerializeField] private Image iconImage;    // 빵/포스기 아이콘
-    [SerializeField] private TMP_Text countText; // "xN"
+    [SerializeField] private TMP_Text countText; 
     [SerializeField] private Sprite breadIcon;
     [SerializeField] private Sprite posIcon;
+    [SerializeField] private Sprite dineInIcon;
 
     private Camera cam;
 
@@ -25,12 +26,12 @@ public class CustomerHeadUI : MonoBehaviour
         worldCanvas.transform.rotation = Quaternion.LookRotation(worldCanvas.transform.position - cam.transform.position);
     }
 
-    public void ShowOrder(int needCount)
+    public void ShowOrder(int needCount,bool isDine = false)
     {
         if (!worldCanvas) return;
         if(needCount <= 0)
         {
-            ShowPOS();
+            ShowPOS(isDine);
             return;
         }
         Show(true);
@@ -40,11 +41,12 @@ public class CustomerHeadUI : MonoBehaviour
         countText.enabled = true;
     }
 
-    public void ShowPOS()
+    public void ShowPOS(bool isDine = false)
     {
         if (!worldCanvas) return;
         Show(true);
-        iconImage.sprite = posIcon;
+        if (isDine == false) iconImage.sprite = posIcon;
+        else iconImage.sprite = dineInIcon;
         iconImage.enabled = true;
         countText.enabled = false;
     }

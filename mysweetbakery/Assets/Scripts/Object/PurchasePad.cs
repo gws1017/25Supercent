@@ -92,6 +92,7 @@ public class PurchasePad : MonoBehaviour
             go.SetActive(true);
         }
         //기존 벽은 파괴?
+        BuildManager.Instance.Unlock(UnlockId.Table);
         Destroy(replaceObject);
         Destroy(gameObject);
 

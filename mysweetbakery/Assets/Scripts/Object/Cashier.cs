@@ -14,7 +14,8 @@ public class Cashier : MonoBehaviour
     }
     #endregion
     [Header("Components")]
-    [SerializeField] private CashierQueue cashierQueue;     // 계산대 위 가방 스폰 위치
+    [SerializeField] private CashierQueue takeoutQueue;     // 계산대 위 가방 스폰 위치
+    [SerializeField] private CashierQueue dineInQueue;     // 계산대 위 가방 스폰 위치
     [SerializeField] private Transform bagSpawnPoint;     // 계산대 위 가방 스폰 위치
     [SerializeField] private PaperBag bagPrefab;
     [SerializeField] private Transform moneySpawnPoint;   // 돈 더미 스폰 위치
@@ -27,8 +28,10 @@ public class Cashier : MonoBehaviour
     private bool isBusy;
     private bool isEnter;
     private Customer pending;
+    public int PricePerBread => pricePerBread;
     public bool IsBusy => isBusy;
-    public CashierQueue CashQueue => cashierQueue;
+    public CashierQueue TakeOutQueue => takeoutQueue;
+    public CashierQueue DineInQueue => dineInQueue;
     public void OnCustomerArrived(Customer c)
     {
         if (c == null) return;
@@ -41,11 +44,28 @@ public class Cashier : MonoBehaviour
     private void TryServe()
     {
         if (isBusy) return;
-        if (!isEnter) return;      
-        if (pending == null) return;
-        if (!pending.IsQueueFront()) return;
+        if (!isEnter) return;    
+        
+        var takeFront = takeoutQueue ? takeoutQueue.PeekFront() : null;
+        if (takeFront != null && !isBusy)
+        {
+            pending = takeFront;
+            StartCoroutine(ServeRoutine(pending));
+            return;
+        }
 
-        StartCoroutine(ServeRoutine(pending));
+        var dineFront = dineInQueue ? dineInQueue.PeekFront() : null;
+        if (dineFront != null && BuildManager.Instance.IsUnlocked(UnlockId.Table))
+        {
+            var seat = TableSeat.Instance.GetFreeSeat();
+            if (seat != null && !isBusy)
+            {
+                pending = dineFront;
+                StartCoroutine(ServeDineInRoutine(pending, seat));
+                return;
+            }
+        }
+
     }
 
     private IEnumerator ServeRoutine(Customer c)
@@ -87,11 +107,39 @@ public class Cashier : MonoBehaviour
 
         isBusy = false;
 
-        if (cashierQueue) cashierQueue.DequeueIfFront(c);
+        if (takeoutQueue) takeoutQueue.DequeueIfFront(c);
         c.OnServedAndLeave();
 
         pending = null;
         TryServe();
+    }
+
+    private IEnumerator ServeDineInRoutine(Customer customer, TableSeat seat)
+    {
+        isBusy = true;
+
+
+        if (dineInQueue) dineInQueue.DequeueIfFront(customer);
+
+        if (seat && customer)
+        {
+            customer.HideHeadIcon();
+            customer.GoTo(seat.SeatPoint.position);            
+            yield return customer.WaitArrive();                
+            yield return seat.SeatCustomer(customer);          
+            customer.HideHeadIcon();
+            if (happyEmojiPrefab)
+            {
+                var fx = Instantiate(happyEmojiPrefab, customer.transform);
+                fx.transform.localPosition = Vector3.zero + Vector3.up * 2.5f;
+                fx.transform.localRotation = Quaternion.identity;
+                StartCoroutine(HappyShrinkAndKill(fx, happyDuration));
+            }
+        }
+
+        pending = null;
+        isBusy = false;
+        TryServe(); // 다음 손님 연속 처리
     }
 
     private IEnumerator HappyShrinkAndKill(GameObject go, float dur)

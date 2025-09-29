@@ -119,6 +119,7 @@ MonoBehaviour:
   countText: {fileID: 2256512156227514842}
   breadIcon: {fileID: 21300000, guid: d0e306dc7c8603d4199e01fcfbfe2cb4, type: 3}
   posIcon: {fileID: 21300000, guid: 6261786b2b0e91c40abbc5dc20129285, type: 3}
+  dineInIcon: {fileID: 21300000, guid: b0dbd9e441c054e40b4cc9b0e1b45d04, type: 3}
 --- !u!1 &57073112955708427
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,7 +826,6 @@ MonoBehaviour:
   headUI: {fileID: 0}
   targetShelf: {fileID: 0}
   shelfStandPoint: {fileID: 0}
-  dineInFeatureEnabled: 0
   breadRange: {x: 1, y: 3}
 --- !u!114 &7792961561225086722
 MonoBehaviour:
