@@ -70,7 +70,7 @@ MonoBehaviour:
   bagSpawnPoint: {fileID: 8052834526799655856}
   bagPrefab: {fileID: 4398240943782114576, guid: 5f3a83b985d174ecf846edb7c0a3b4ae, type: 3}
   moneySpawnPoint: {fileID: 751901608618858383}
-  pricePerBread: 1
+  pricePerBread: 5
   happyEmojiPrefab: {fileID: 6983684880216521668, guid: 5a2f016911b5cc241bcf7c80d4567463, type: 3}
   happyDuration: 1
 --- !u!1 &2402793640493853753

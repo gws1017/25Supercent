@@ -14,6 +14,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool EmptyBread => currentBread == 0;
     public bool FullBread => currentBread >= maxBread;
+    public bool HasEnoughMoney(int price) => currentMoney >= price;
 
     private void Start()
     {
